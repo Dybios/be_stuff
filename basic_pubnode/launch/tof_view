@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find #packagename)/launch/toflaunch.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find #packagename)/rviz/tofrviz.rviz" />
+</launch>
