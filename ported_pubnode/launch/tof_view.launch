@@ -1,0 +1,5 @@
+<launch>
+  <include file="tofservo/launch/toflaunch.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d tofservo/rviz/tofrviz.rviz" />
+</launch>
