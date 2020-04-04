@@ -5,10 +5,8 @@ import std_msgs.msg
 import RPi.GPIO as GPIO
 import time
 import board
-import busio
-import adafruit_vl53l0x
-i2c = busio.I2C(board.SCL, board.SDA)
-sensor = adafruit_vl53l0x.VL53L0X(i2c)
+import VL53L0X
+tof = VL53L0X.VL53L0X(i2c_bus=1,i2c_address=0x29)
 
 #vl53.measurement_timing_budget = 200000
 servopin = 12
@@ -19,18 +17,22 @@ pwm.start(0)
 
 def servocntrl(state, angle):
     if (bool(state)) :
+       tof.open()
+       tof.start_ranging(VL53L0X.Vl53l0xAccuracyMode.BETTER)
        duty = ((angle/18)+2)
        GPIO.output(servopin,True)
        pwm.ChangeDutyCycle(duty)
        time.sleep(0.5)
        pwm.ChangeDutyCycle(0)
        start_scan_time = rospy.Time.now()
-       distance = sensor.range
+       distance = (tof.get_distance()/100)
        end_scan_time = rospy.Time.now()
        diff = (start_scan_time - end_scan_time).toSec()  #*1e-3
        return distance,diff
     else :
        GPIO.output(servopin,False)
+       tof.stop_ranging()
+       tof.close()
 
 def publisher() :
     pub = rospy.Publisher('scan',LaserScan,queue_size=1000)  #scan is the topic
