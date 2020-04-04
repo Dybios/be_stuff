@@ -1,0 +1,4 @@
+<launch>
+  <node name="tof_node"          pkg="#packagename"  type="tof_node" output="screen">
+  </node>
+</launch>
